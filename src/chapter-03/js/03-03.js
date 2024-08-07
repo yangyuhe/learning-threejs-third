@@ -1,5 +1,4 @@
 function init() {
-
   // use the defaults
   var stats = initStats();
   var renderer = initRenderer();
@@ -12,7 +11,7 @@ function init() {
   var scene = new THREE.Scene();
 
   // add a simple scene
-  addHouseAndTree(scene)
+  addHouseAndTree(scene);
 
   // add subtle ambient lighting
   var ambientLight = new THREE.AmbientLight("#0c0c0c");
@@ -21,24 +20,25 @@ function init() {
   // the point light where working with
   var pointColor = "#ccffcc";
   var pointLight = new THREE.PointLight(pointColor);
-  pointLight.decay = 0.1
+  pointLight.decay = 0.1;
 
   pointLight.castShadow = true;
 
   scene.add(pointLight);
 
+  var axes = new THREE.AxesHelper(30);
+  scene.add(axes);
+
   var helper = new THREE.PointLightHelper(pointLight);
-  // scene.add(helper);
+  scene.add(helper);
 
-  var shadowHelper = new THREE.CameraHelper(pointLight.shadow.camera)
-  // scene.add(shadowHelper)
-
-
+  var shadowHelper = new THREE.CameraHelper(pointLight.shadow.camera);
+  // scene.add(shadowHelper);
 
   // add a small sphere simulating the pointlight
   var sphereLight = new THREE.SphereGeometry(0.2);
   var sphereLightMaterial = new THREE.MeshBasicMaterial({
-    color: 0xac6c25
+    color: 0xac6c25,
   });
   var sphereLightMesh = new THREE.Mesh(sphereLight, sphereLightMaterial);
   sphereLightMesh.position = new THREE.Vector3(3, 0, 5);
@@ -55,7 +55,6 @@ function init() {
   render();
 
   function render() {
-
     helper.update();
     shadowHelper.update();
 
@@ -70,15 +69,14 @@ function init() {
     } else {
       phase += controls.rotationSpeed;
     }
-    sphereLightMesh.position.z = +(25 * (Math.sin(phase)));
-    sphereLightMesh.position.x = +(14 * (Math.cos(phase)));
+    sphereLightMesh.position.z = +(85 * Math.sin(phase));
+    sphereLightMesh.position.x = +(14 * Math.cos(phase));
     sphereLightMesh.position.y = 5;
 
     if (invert < 0) {
       var pivot = 14;
-      sphereLightMesh.position.x = (invert * (sphereLightMesh.position.x - pivot)) + pivot;
+      sphereLightMesh.position.x = -sphereLightMesh.position.x + 2 * pivot;
     }
-
 
     // render using requestAnimationFrame
     requestAnimationFrame(render);
@@ -86,31 +84,29 @@ function init() {
   }
 
   function setupControls() {
-    var controls = new function () {
+    var controls = new (function () {
       this.rotationSpeed = 0.01;
       this.bouncingSpeed = 0.03;
-      this.ambientColor = ambientLight.color.getStyle();;
-      this.pointColor = pointLight.color.getStyle();;
+      this.ambientColor = ambientLight.color.getStyle();
+      this.pointColor = pointLight.color.getStyle();
       this.intensity = 1;
       this.distance = pointLight.distance;
-    };
-
-    
+    })();
 
     var gui = new dat.GUI();
-    gui.addColor(controls, 'ambientColor').onChange(function (e) {
+    gui.addColor(controls, "ambientColor").onChange(function (e) {
       ambientLight.color = new THREE.Color(e);
     });
 
-    gui.addColor(controls, 'pointColor').onChange(function (e) {
+    gui.addColor(controls, "pointColor").onChange(function (e) {
       pointLight.color = new THREE.Color(e);
     });
 
-    gui.add(controls, 'distance', 0, 100).onChange(function (e) {
+    gui.add(controls, "distance", 0, 100).onChange(function (e) {
       pointLight.distance = e;
     });
 
-    gui.add(controls, 'intensity', 0, 3).onChange(function (e) {
+    gui.add(controls, "intensity", 0, 3).onChange(function (e) {
       pointLight.intensity = e;
     });
 

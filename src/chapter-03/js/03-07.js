@@ -1,9 +1,7 @@
 function init() {
-
-
   var stats = initStats();
   var renderer = initRenderer({
-    alpha: true
+    alpha: true,
   });
 
   var camera = initCamera();
@@ -15,26 +13,27 @@ function init() {
   var trackballControls = initTrackballControls(camera, renderer);
   var clock = new THREE.Clock();
 
-
   // create a scene, that will hold all our elements such as objects, cameras and lights.
   var scene = new THREE.Scene();
 
   // create the ground plane
-  var textureGrass = new THREE.TextureLoader().load("../../assets/textures/ground/grasslight-big.jpg");
+  var textureGrass = new THREE.TextureLoader().load(
+    "../../assets/textures/ground/grasslight-big.jpg"
+  );
   textureGrass.wrapS = THREE.RepeatWrapping;
   textureGrass.wrapT = THREE.RepeatWrapping;
   textureGrass.repeat.set(10, 10);
 
   var planeGeometry = new THREE.PlaneGeometry(1000, 1000, 20, 20);
   var planeMaterial = new THREE.MeshLambertMaterial({
-    map: textureGrass
+    map: textureGrass,
   });
   var plane = new THREE.Mesh(planeGeometry, planeMaterial);
   plane.receiveShadow = true;
 
   // rotate and position the plane
   plane.rotation.x = -0.5 * Math.PI;
-  plane.position.x = 15;
+  plane.position.x = 0;
   plane.position.y = 0;
   plane.position.z = 0;
 
@@ -44,7 +43,7 @@ function init() {
   // create a cube
   var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
   var cubeMaterial = new THREE.MeshLambertMaterial({
-    color: 0xff3333
+    color: 0xff3333,
   });
   var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
   cube.castShadow = true;
@@ -59,7 +58,7 @@ function init() {
 
   var sphereGeometry = new THREE.SphereGeometry(4, 25, 25);
   var sphereMaterial = new THREE.MeshLambertMaterial({
-    color: 0x7777ff
+    color: 0x7777ff,
   });
   var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
@@ -78,15 +77,21 @@ function init() {
   scene.add(ambientLight);
 
   // add spotlight for a bit of light
-  var spotLight0 = new THREE.SpotLight(0xcccccc);
-  spotLight0.position.set(-40, 60, -10);
-  spotLight0.lookAt(plane);
+  var spotLight0 = new THREE.SpotLight(0x0000ff);
+  spotLight0.position.set(0, 40, -10);
+  console.log(sphere.position);
+  // spotLight0.lookAt(sphere.position);
+  spotLight0.target = sphere;
   scene.add(spotLight0);
 
+  const spotLightHelper = new THREE.SpotLightHelper(spotLight0);
+  scene.add(spotLightHelper);
+
+  var axes = new THREE.AxesHelper(60);
+  scene.add(axes);
 
   var target = new THREE.Object3D();
   target.position = new THREE.Vector3(5, 0, 0);
-
 
   var pointColor = "#ffffff";
   //    var spotLight = new THREE.SpotLight( pointColor);
@@ -107,9 +112,7 @@ function init() {
   spotLight.shadowMapWidth = 2048;
   spotLight.shadowMapHeight = 2048;
 
-
-  scene.add(spotLight);
-
+  // scene.add(spotLight);
 
   // call the render function
   var step = 0;
@@ -118,7 +121,7 @@ function init() {
   var invert = 1;
   var phase = 0;
 
-  var controls = new function () {
+  var controls = new (function () {
     this.rotationSpeed = 0.03;
     this.bouncingSpeed = 0.03;
     this.ambientColor = ambiColor;
@@ -131,36 +134,49 @@ function init() {
     this.castShadow = true;
     this.onlyShadow = false;
     this.target = "Plane";
-
-  };
+  })();
 
   var gui = new dat.GUI();
-  gui.addColor(controls, 'ambientColor').onChange(function (e) {
+  gui.addColor(controls, "ambientColor").onChange(function (e) {
     ambientLight.color = new THREE.Color(e);
   });
 
-  gui.addColor(controls, 'pointColor').onChange(function (e) {
+  gui.addColor(controls, "pointColor").onChange(function (e) {
     spotLight.color = new THREE.Color(e);
   });
 
-  gui.add(controls, 'intensity', 0, 5).onChange(function (e) {
+  gui.add(controls, "intensity", 0, 5).onChange(function (e) {
     spotLight.intensity = e;
   });
 
+  var textureFlare0 = THREE.ImageUtils.loadTexture(
+    "../../assets/textures/flares/lensflare0.png"
+  );
+  var textureFlare3 = THREE.ImageUtils.loadTexture(
+    "../../assets/textures/flares/lensflare3.png"
+  );
 
-  var textureFlare0 = THREE.ImageUtils.loadTexture("../../assets/textures/flares/lensflare0.png");
-  var textureFlare3 = THREE.ImageUtils.loadTexture("../../assets/textures/flares/lensflare3.png");
-
-  var flareColor = new THREE.Color(0xffaacc);
+  var flareColor = new THREE.Color(0xff0000);
 
   var lensFlare = new THREE.Lensflare();
 
-  lensFlare.addElement(new THREE.LensflareElement(textureFlare0, 350, 0.0, flareColor));
-  lensFlare.addElement(new THREE.LensflareElement(textureFlare3, 60, 0.6, flareColor));
-  lensFlare.addElement(new THREE.LensflareElement(textureFlare3, 70, 0.7, flareColor));
-  lensFlare.addElement(new THREE.LensflareElement(textureFlare3, 120, 0.9, flareColor));
-  lensFlare.addElement(new THREE.LensflareElement(textureFlare3, 70, 1.0, flareColor));
-  spotLight.add(lensFlare);
+  //设置的光晕的大小是350，距离光源0的位置，镜头泛着红光
+  lensFlare.addElement(
+    new THREE.LensflareElement(textureFlare0, 350, 0.0, flareColor)
+  );
+  lensFlare.addElement(
+    new THREE.LensflareElement(textureFlare3, 60, 0.6, flareColor)
+  );
+  lensFlare.addElement(
+    new THREE.LensflareElement(textureFlare3, 70, 0.7, flareColor)
+  );
+  lensFlare.addElement(
+    new THREE.LensflareElement(textureFlare3, 120, 0.9, flareColor)
+  );
+  lensFlare.addElement(
+    new THREE.LensflareElement(textureFlare3, 70, 1.0, flareColor)
+  );
+  // spotLight.add(lensFlare);
 
   render();
 
@@ -174,10 +190,12 @@ function init() {
 
     // bounce the sphere up and down
     step += controls.bouncingSpeed;
-    sphere.position.x = 20 + (10 * (Math.cos(step)));
-    sphere.position.y = 2 + (10 * Math.abs(Math.sin(step)));
+    sphere.position.x = 20 + 10 * Math.cos(step);
+    sphere.position.y = 2 + 10 * Math.abs(Math.sin(step));
 
     requestAnimationFrame(render);
     renderer.render(scene, camera);
+
+    spotLightHelper.update();
   }
-};
+}

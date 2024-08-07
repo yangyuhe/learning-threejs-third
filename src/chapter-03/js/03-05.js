@@ -1,5 +1,4 @@
 function init() {
-
   var stats = initStats();
   var renderer = initRenderer();
   var camera = initCamera();
@@ -11,14 +10,18 @@ function init() {
   var scene = new THREE.Scene();
 
   // create the ground plane
-  var textureGrass = new THREE.TextureLoader().load("../../assets/textures/ground/grasslight-big.jpg");
+  var textureGrass = new THREE.TextureLoader().load(
+    "../../assets/textures/ground/grasslight-big.jpg"
+  );
+  //重复平铺
   textureGrass.wrapS = THREE.RepeatWrapping;
   textureGrass.wrapT = THREE.RepeatWrapping;
-  textureGrass.repeat.set(10, 10);
+  //设置UV方向上的重复次数
+  textureGrass.repeat.set(100, 100);
 
   var planeGeometry = new THREE.PlaneGeometry(1000, 1000, 20, 20);
   var planeMaterial = new THREE.MeshLambertMaterial({
-    map: textureGrass
+    map: textureGrass,
   });
 
   //        var planeMaterial = new THREE.MeshLambertMaterial();
@@ -37,7 +40,7 @@ function init() {
   // create a cube
   var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
   var cubeMaterial = new THREE.MeshLambertMaterial({
-    color: 0xff3333
+    color: 0xff3333,
   });
   var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
   cube.castShadow = true;
@@ -52,7 +55,7 @@ function init() {
 
   var sphereGeometry = new THREE.SphereGeometry(4, 25, 25);
   var sphereMaterial = new THREE.MeshPhongMaterial({
-    color: 0x7777ff
+    color: 0x7777ff,
   });
   var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
@@ -75,12 +78,18 @@ function init() {
   target.position = new THREE.Vector3(5, 0, 0);
 
   var hemiLight = new THREE.HemisphereLight(0x0000ff, 0x00ff00, 0.6);
-  hemiLight.position.set(0, 500, 0);
+  hemiLight.position.set(0, 80, 0);
   scene.add(hemiLight);
+
+  const helper = new THREE.HemisphereLightHelper(hemiLight, 50, "#ff0000");
+  scene.add(helper);
+
+  var axes = new THREE.AxesHelper(60);
+  scene.add(axes);
 
   var pointColor = "#ffffff";
   var dirLight = new THREE.DirectionalLight(pointColor);
-  dirLight.position.set(30, 10, -50);
+  dirLight.position.set(30, 60, -50);
   dirLight.castShadow = true;
   dirLight.target = plane;
   dirLight.shadow.camera.near = 0.1;
@@ -101,8 +110,6 @@ function init() {
   var phase = 0;
   var controls = addControls();
 
-
-
   render();
 
   function render() {
@@ -117,41 +124,39 @@ function init() {
 
     // bounce the sphere up and down
     step += controls.bouncingSpeed;
-    sphere.position.x = 20 + (10 * (Math.cos(step)));
-    sphere.position.y = 2 + (10 * Math.abs(Math.sin(step)));
+    sphere.position.x = 20 + 10 * Math.cos(step);
+    sphere.position.y = 2 + 10 * Math.abs(Math.sin(step));
 
     requestAnimationFrame(render);
     renderer.render(scene, camera);
   }
 
   function addControls() {
-    var controls = new function () {
+    var controls = new (function () {
       this.rotationSpeed = 0.03;
       this.bouncingSpeed = 0.03;
       this.hemisphere = true;
       this.color = 0x0000ff;
       this.groundColor = 0x00ff00;
       this.intensity = 0.6;
-
-    };
+    })();
 
     var gui = new dat.GUI();
 
-    gui.add(controls, 'hemisphere').onChange(function (e) {
-
+    gui.add(controls, "hemisphere").onChange(function (e) {
       if (!e) {
         hemiLight.intensity = 0;
       } else {
         hemiLight.intensity = controls.intensity;
       }
     });
-    gui.addColor(controls, 'groundColor').onChange(function (e) {
+    gui.addColor(controls, "groundColor").onChange(function (e) {
       hemiLight.groundColor = new THREE.Color(e);
     });
-    gui.addColor(controls, 'color').onChange(function (e) {
+    gui.addColor(controls, "color").onChange(function (e) {
       hemiLight.color = new THREE.Color(e);
     });
-    gui.add(controls, 'intensity', 0, 5).onChange(function (e) {
+    gui.add(controls, "intensity", 0, 5).onChange(function (e) {
       hemiLight.intensity = e;
     });
 

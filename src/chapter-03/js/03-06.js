@@ -1,12 +1,11 @@
 function init() {
-
   var stats = initStats();
   var renderer = initRenderer({
-    antialias: true
+    antialias: true,
   });
   var camera = initCamera();
-  
-  camera.position.set(-50, 30, 50)
+
+  camera.position.set(-50, 30, 50);
   // camera.lookAt(new THREE.Vector3(0, 0, -35));
 
   var trackballControls = initTrackballControls(camera, renderer);
@@ -19,8 +18,7 @@ function init() {
   var planeGeometry = new THREE.PlaneGeometry(70, 70, 1, 1);
   var planeMaterial = new THREE.MeshStandardMaterial({
     roughness: 0.044676705160855, // calculated from shininess = 1000
-    metalness: 0.0
-
+    metalness: 0.0,
   });
   var plane = new THREE.Mesh(planeGeometry, planeMaterial);
   // plane.receiveShadow  = true;
@@ -43,6 +41,7 @@ function init() {
   spotLight0.lookAt(plane);
   scene.add(spotLight0);
 
+  //颜色，强度，矩形宽，矩形高
   var areaLight1 = new THREE.RectAreaLight(0xff0000, 500, 4, 10);
   areaLight1.position.set(-10, 10, -35);
   scene.add(areaLight1);
@@ -57,10 +56,11 @@ function init() {
 
   var planeGeometry1 = new THREE.BoxGeometry(4, 10, 0);
   var planeGeometry1Mat = new THREE.MeshBasicMaterial({
-    color: 0xff0000
+    color: 0xff0000,
   });
   var plane1 = new THREE.Mesh(planeGeometry1, planeGeometry1Mat);
   plane1.position.copy(areaLight1.position);
+  console.log(areaLight1.position);
   scene.add(plane1);
 
   var planeGeometry2 = new THREE.BoxGeometry(4, 10, 0);
@@ -74,15 +74,14 @@ function init() {
 
   var planeGeometry3 = new THREE.BoxGeometry(4, 10, 0);
   var planeGeometry3Mat = new THREE.MeshBasicMaterial({
-    color: 0x0000ff
+    color: 0x0000ff,
   });
   var plane3 = new THREE.Mesh(planeGeometry3, planeGeometry3Mat);
 
   plane3.position.copy(areaLight3.position);
   scene.add(plane3);
 
-
-  var controls = new function () {
+  var controls = new (function () {
     this.rotationSpeed = 0.02;
     this.color1 = 0xff0000;
     this.intensity1 = 500;
@@ -90,22 +89,21 @@ function init() {
     this.intensity2 = 500;
     this.color3 = 0x0000ff;
     this.intensity3 = 500;
-  };
+  })();
 
   var gui = new dat.GUI();
-  gui.addColor(controls, 'color1').onChange(function (e) {
+  gui.addColor(controls, "color1").onChange(function (e) {
     areaLight1.color = new THREE.Color(e);
     planeGeometry1Mat.color = new THREE.Color(e);
     scene.remove(plane1);
     plane1 = new THREE.Mesh(planeGeometry1, planeGeometry1Mat);
     plane1.position.copy(areaLight1.position);
     scene.add(plane1);
-
   });
-  gui.add(controls, 'intensity1', 0, 1000).onChange(function (e) {
+  gui.add(controls, "intensity1", 0, 1000).onChange(function (e) {
     areaLight1.intensity = e;
   });
-  gui.addColor(controls, 'color2').onChange(function (e) {
+  gui.addColor(controls, "color2").onChange(function (e) {
     areaLight2.color = new THREE.Color(e);
     planeGeometry2Mat.color = new THREE.Color(e);
     scene.remove(plane2);
@@ -113,10 +111,10 @@ function init() {
     plane2.position.copy(areaLight2.position);
     scene.add(plane2);
   });
-  gui.add(controls, 'intensity2', 0, 1000).onChange(function (e) {
+  gui.add(controls, "intensity2", 0, 1000).onChange(function (e) {
     areaLight2.intensity = e;
   });
-  gui.addColor(controls, 'color3').onChange(function (e) {
+  gui.addColor(controls, "color3").onChange(function (e) {
     areaLight3.color = new THREE.Color(e);
     planeGeometry3Mat.color = new THREE.Color(e);
     scene.remove(plane3);
@@ -124,10 +122,9 @@ function init() {
     plane3.position.copy(areaLight3.position);
     scene.add(plane3);
   });
-  gui.add(controls, 'intensity3', 0, 1000).onChange(function (e) {
+  gui.add(controls, "intensity3", 0, 1000).onChange(function (e) {
     areaLight3.intensity = e;
   });
-
 
   render();
 
